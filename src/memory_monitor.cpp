@@ -2,7 +2,8 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <iomanip>
+
+#include "../include/monitor.h"
 
 using namespace std;
 
@@ -47,13 +48,12 @@ MemoryInfo getMemoryInfo() {
     return {total, available};
 }
 
-int main() {
+double getRAMUsage() {
 
     MemoryInfo memory = getMemoryInfo();
 
     if (memory.total == 0) {
-        cout << "Unable to read memory information." << endl;
-        return 1;
+        return 0.0;
     }
 
     long long used =
@@ -62,42 +62,5 @@ int main() {
     double usage =
         (double)used / memory.total * 100.0;
 
-    double totalGB =
-        memory.total / (1024.0 * 1024.0);
-
-    double usedGB =
-        used / (1024.0 * 1024.0);
-
-    double availableGB =
-        memory.available / (1024.0 * 1024.0);
-
-    cout << "====================================\n";
-    cout << "        HARD-MON MEMORY MONITOR\n";
-    cout << "====================================\n\n";
-
-    cout << fixed << setprecision(2);
-
-    cout << "Total RAM     : "
-         << totalGB << " GB\n";
-
-    cout << "Used RAM      : "
-         << usedGB << " GB\n";
-
-    cout << "Available RAM : "
-         << availableGB << " GB\n";
-
-    cout << "RAM Usage     : "
-         << usage << " %\n";
-
-    if (usage >= 90) {
-        cout << "RAM Status    : CRITICAL\n";
-    }
-    else if (usage >= 70) {
-        cout << "RAM Status    : WARNING\n";
-    }
-    else {
-        cout << "RAM Status    : NORMAL\n";
-    }
-
-    return 0;
+    return usage;
 }

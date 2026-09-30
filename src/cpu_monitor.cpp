@@ -1,10 +1,11 @@
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <thread>
 #include <chrono>
+
+#include "../include/monitor.h"
 
 using namespace std;
 
@@ -64,7 +65,7 @@ double calculateCPUUsage(CPUStats first, CPUStats second) {
     return usage;
 }
 
-int main() {
+double getCPUUsage() {
 
     CPUStats first = getCPUStats();
 
@@ -74,25 +75,5 @@ int main() {
 
     CPUStats second = getCPUStats();
 
-    double cpuUsage =
-        calculateCPUUsage(first, second);
-
-    cout << "====================================\n";
-    cout << "          HARD-MON CPU MONITOR\n";
-    cout << "====================================\n\n";
-
-    cout << fixed << setprecision(2);
-    cout << "CPU Usage : " << cpuUsage << " %\n";
-
-    if (cpuUsage >= 90) {
-        cout << "CPU Status: CRITICAL\n";
-    }
-    else if (cpuUsage >= 70) {
-        cout << "CPU Status: WARNING\n";
-    }
-    else {
-        cout << "CPU Status: NORMAL\n";
-    }
-
-    return 0;
+    return calculateCPUUsage(first, second);
 }
