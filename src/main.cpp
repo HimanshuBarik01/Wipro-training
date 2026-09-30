@@ -4,6 +4,7 @@
 #include "../include/monitor.h"
 #include "../include/diagnostic.h"
 #include "../include/fault_simulator.h"
+#include "../include/logger.h"
 
 using namespace std;
 
@@ -54,6 +55,13 @@ int main() {
          << overallStatus << "\n";
 
     cout << "------------------------------------------\n";
+ 
+    logHealthData(
+    cpuUsage,
+    ramUsage,
+    diskUsage,
+    overallStatus
+);
 
     char choice;
 
