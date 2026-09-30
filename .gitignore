@@ -1,2 +1,4 @@
 hardmon
+cpu_monitor
+memory_monitor
 *.o
