@@ -5,9 +5,9 @@
 #include "../include/diagnostic.h"
 #include "../include/fault_simulator.h"
 #include "../include/logger.h"
+#include "../include/system_info.h"
 
 using namespace std;
-
 
 int main() {
 
@@ -18,6 +18,20 @@ int main() {
 
     cout << "Collecting hardware information...\n\n";
 
+    string hostname = getHostname();
+    string kernelVersion = getKernelVersion();
+    int cpuCores = getCPUCoreCount();
+    double uptime = getSystemUptime();
+    int processCount = getProcessCount();
+
+    cout << "------------- SYSTEM INFORMATION -------------\n\n";
+
+    cout << "Hostname       : " << hostname << "\n";
+    cout << "Kernel Version : " << kernelVersion << "\n";
+    cout << "CPU Cores      : " << cpuCores << "\n";
+    cout << "System Uptime  : " << uptime << " seconds\n";
+    cout << "Processes      : " << processCount << "\n\n";
+
     double cpuUsage = getCPUUsage();
     double ramUsage = getRAMUsage();
     double diskUsage = getDiskUsage();
@@ -26,12 +40,12 @@ int main() {
     string ramStatus = getStatus(ramUsage);
     string diskStatus = getStatus(diskUsage);
 
- string overallStatus =
-    getOverallStatus(
-        cpuStatus,
-        ramStatus,
-        diskStatus
-    );
+    string overallStatus =
+        getOverallStatus(
+            cpuStatus,
+            ramStatus,
+            diskStatus
+        );
 
     cout << "------------- HEALTH REPORT -------------\n\n";
 
@@ -55,21 +69,22 @@ int main() {
          << overallStatus << "\n";
 
     cout << "------------------------------------------\n";
- 
+
     logHealthData(
-    cpuUsage,
-    ramUsage,
-    diskUsage,
-    overallStatus
-);
+        cpuUsage,
+        ramUsage,
+        diskUsage,
+        overallStatus
+    );
 
     char choice;
 
     cout << "\nRun fault simulation? (y/n): ";
     cin >> choice;
+
     if (choice == 'y' || choice == 'Y') {
         runFaultSimulation();
-}  
+    }
 
     return 0;
 }
