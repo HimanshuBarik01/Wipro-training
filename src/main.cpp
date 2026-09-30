@@ -3,6 +3,7 @@
 
 #include "../include/monitor.h"
 #include "../include/diagnostic.h"
+#include "../include/fault_simulator.h"
 
 using namespace std;
 
@@ -53,6 +54,14 @@ int main() {
          << overallStatus << "\n";
 
     cout << "------------------------------------------\n";
+
+    char choice;
+
+    cout << "\nRun fault simulation? (y/n): ";
+    cin >> choice;
+    if (choice == 'y' || choice == 'Y') {
+        runFaultSimulation();
+}  
 
     return 0;
 }
