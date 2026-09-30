@@ -2,21 +2,10 @@
 #include <iomanip>
 
 #include "../include/monitor.h"
+#include "../include/diagnostic.h"
 
 using namespace std;
 
-string getStatus(double usage) {
-
-    if (usage >= 90) {
-        return "CRITICAL";
-    }
-    else if (usage >= 70) {
-        return "WARNING";
-    }
-    else {
-        return "NORMAL";
-    }
-}
 
 int main() {
 
@@ -35,20 +24,12 @@ int main() {
     string ramStatus = getStatus(ramUsage);
     string diskStatus = getStatus(diskUsage);
 
-    string overallStatus = "NORMAL";
-
-    if (cpuStatus == "CRITICAL" ||
-        ramStatus == "CRITICAL" ||
-        diskStatus == "CRITICAL") {
-
-        overallStatus = "CRITICAL";
-    }
-    else if (cpuStatus == "WARNING" ||
-             ramStatus == "WARNING" ||
-             diskStatus == "WARNING") {
-
-        overallStatus = "WARNING";
-    }
+ string overallStatus =
+    getOverallStatus(
+        cpuStatus,
+        ramStatus,
+        diskStatus
+    );
 
     cout << "------------- HEALTH REPORT -------------\n\n";
 
