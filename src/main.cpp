@@ -6,6 +6,7 @@
 #include "../include/fault_simulator.h"
 #include "../include/logger.h"
 #include "../include/system_info.h"
+#include "../include/report_generator.h"
 
 using namespace std;
 
@@ -76,6 +77,20 @@ int main() {
         diskUsage,
         overallStatus
     );
+    generateHealthReport(
+    hostname,
+    kernelVersion,
+    cpuCores,
+    uptime,
+    processCount,
+    cpuUsage,
+    ramUsage,
+    diskUsage,
+    cpuStatus,
+    ramStatus,
+    diskStatus,
+    overallStatus
+);
 
     char choice;
 
