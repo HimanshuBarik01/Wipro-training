@@ -2,4 +2,5 @@ hardmon
 cpu_monitor
 memory_monitor
 disk_monitor
+diagnostic_engine
 *.o
