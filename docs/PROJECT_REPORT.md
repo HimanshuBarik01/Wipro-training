@@ -12,621 +12,298 @@
 
 ---
 
-# 1. Abstract
+1. Abstract
 
-HARD-MON (Hardware Health & Diagnostic System) is a Linux-based system monitoring and diagnostic application developed using C++17.
+HARD-MON is a Linux-based Hardware Health and Diagnostic System developed using C++17. It monitors CPU, RAM, and disk utilization, collects system information, evaluates resource health using predefined thresholds, simulates abnormal conditions, records health information, and generates a system health report.
 
-The primary purpose of the system is to collect hardware-related system information, monitor CPU, RAM and disk utilization, identify abnormal resource conditions and provide a simple health status for the system.
+The application uses standard Linux interfaces including /proc/stat, /proc/meminfo, /proc/cpuinfo, /proc/uptime, /proc/sys/kernel/osrelease, /proc, and statvfs().
 
-The application uses Linux system interfaces such as the `/proc` filesystem and the `statvfs()` system call to obtain real system information. A C++ diagnostic engine evaluates resource utilization against predefined thresholds and classifies each resource as NORMAL, WARNING or CRITICAL.
+The project demonstrates practical concepts in C++, Linux system programming, resource monitoring, diagnostic logic, fault simulation, logging, testing, documentation, and Git version control.
 
-The system also includes a fault simulation module that allows controlled abnormal conditions to be tested without intentionally damaging or overloading the real system. Health information can be stored in a log file, and a structured health report can be generated for further analysis.
+2. Introduction
 
-The project follows a modular architecture with separate components for monitoring, diagnosis, fault simulation, logging, system information and reporting. Git was used throughout development to maintain version history and track project progress.
+Modern Linux systems continuously consume CPU, memory, and storage resources. Abnormally high resource utilization can affect system performance and reliability.
 
----
+HARD-MON provides a lightweight command-line solution for monitoring selected system resources and classifying their health as NORMAL, WARNING, or CRITICAL.
 
-# 2. Introduction
+The system collects real Linux system data, processes it through modular C++ components, applies diagnostic rules, and produces readable health information.
 
-Modern computer systems continuously utilize CPU, memory and storage resources. Monitoring these resources is important for understanding system health and identifying abnormal conditions.
+3. Problem Statement
 
-Linux provides several interfaces through which applications can obtain system information. The `/proc` virtual filesystem exposes information about CPU, memory, processes, uptime and kernel details.
+Linux provides system information through interfaces such as /proc, but raw system statistics do not directly indicate whether a system is operating normally.
 
-HARD-MON uses these Linux facilities together with C++ system programming techniques to create a lightweight command-line monitoring and diagnostic system.
+HARD-MON addresses this by:
 
-Instead of displaying only raw resource statistics, HARD-MON converts the collected information into simple health states:
+Collecting system resource information.
+Processing the collected data.
+Applying predefined diagnostic thresholds.
+Identifying abnormal conditions.
+Calculating an overall health status.
+Supporting controlled fault simulation.
+Recording health information.
+Generating a structured health report.
+4. Objectives and Scope
+Objectives
 
-```text
-NORMAL
-WARNING
-CRITICAL
-```
+The project aims to:
 
-This makes the monitoring information easier to interpret and provides a foundation for future hardware health and diagnostic extensions.
+Monitor CPU, RAM, and disk utilization.
+Collect important Linux system information.
+Detect abnormal resource utilization.
+Classify resource health.
+Calculate overall system health.
+Simulate CPU, RAM, disk, and multiple faults.
+Maintain health logs.
+Generate health reports.
+Demonstrate Linux and C++ system-programming concepts.
+Provide a tested and maintainable implementation.
+Scope
+Included
+CPU monitoring
+RAM monitoring
+Disk monitoring
+System information collection
+Threshold-based diagnostics
+Fault simulation
+Health logging
+Health reporting
+Functional, integration, and reliability testing
+Git version control
+Technical documentation
+Not Included
+Artificial intelligence or machine learning
+Cloud monitoring
+Database integration
+Web or mobile application
+External hardware sensors
+Complex GUI
+Actual Linux kernel-driver development
+5. System Architecture
 
----
+HARD-MON follows a modular monitoring and diagnostic architecture:
 
-# 3. Problem Statement
-
-System resource utilization can increase because of applications, processes, insufficient memory, storage consumption or other system activities.
-
-High resource utilization may affect system performance. However, raw system statistics do not always provide an immediate indication of whether the current condition should be considered normal or requires attention.
-
-The problem addressed by HARD-MON is therefore:
-
-> To develop a Linux-based system that collects important hardware-related parameters, analyzes resource utilization using predefined thresholds and provides a simple diagnostic health status.
-
----
-
-# 4. Project Objectives
-
-The major objectives of HARD-MON are:
-
-1. Monitor CPU utilization.
-2. Monitor RAM utilization.
-3. Monitor disk utilization.
-4. Collect basic Linux system information.
-5. Classify resource conditions using predefined thresholds.
-6. Determine overall system health.
-7. Simulate abnormal conditions for testing.
-8. Maintain health logs.
-9. Generate a structured health report.
-10. Provide a modular and maintainable C++ implementation.
-11. Demonstrate Linux system programming concepts.
-12. Maintain project development history using Git.
-
----
-
-# 5. Project Scope
-
-## 5.1 In Scope
-
-The current system supports:
-
-* CPU utilization monitoring
-* RAM utilization monitoring
-* Disk utilization monitoring
-* CPU core detection
-* Hostname detection
-* Kernel version detection
-* System uptime
-* Process counting
-* Health classification
-* Overall health calculation
-* Fault simulation
-* Health logging
-* Health report generation
-* Functional testing
-* Integration testing
-* Reliability testing
-* Git-based version control
-* Technical documentation
-
-## 5.2 Out of Scope
-
-The current implementation does not include:
-
-* Actual hardware failure generation
-* Physical hardware sensor integration
-* Kernel driver development
-* Cloud monitoring
-* Database integration
-* Web-based dashboard
-* Machine learning prediction
-* Remote monitoring
-* Automated email/SMS notifications
-
-These can be considered future extensions.
-
----
-
-# 6. Proposed System
-
-HARD-MON follows a modular monitoring and diagnostic architecture.
-
-The overall workflow is:
-
-```text
++------------------------------------------------+
+|              HARD-MON APPLICATION              |
++------------------------------------------------+
+                      |
+                      v
++------------------------------------------------+
+|             System Information                 |
+| Hostname | Kernel | CPU Cores | Uptime | PID  |
++------------------------------------------------+
+                      |
+                      v
++------------------------------------------------+
+|          Hardware Monitoring Layer             |
+| CPU Monitor | RAM Monitor | Disk Monitor       |
++------------------------------------------------+
+                      |
+                      v
++------------------------------------------------+
+|              Diagnostic Engine                |
+|       NORMAL | WARNING | CRITICAL              |
++------------------------------------------------+
+                      |
+             +--------+--------+
+             |                 |
+             v                 v
++----------------------+  +----------------------+
+|  Fault Simulation   |  | Logging & Reporting   |
++----------------------+  +----------------------+
+Data Flow
 Linux System
-     |
-     v
-System Data Collection
-     |
-     v
-CPU / RAM / Disk Monitoring
-     |
-     v
+     ↓
+System Information & Resource Data
+     ↓
+Monitoring Modules
+     ↓
 Diagnostic Engine
-     |
-     v
-Health Classification
-     |
-     +----------------------+
-     |                      |
-     v                      v
-Health Logging        Health Report
-     |
-     v
-Historical Information
-```
+     ↓
+Resource Status
+     ↓
+Overall Health
+     ↓
+Terminal Output
+     ├── Health Log
+     └── Health Report
 
-The system can additionally execute a fault simulation module for controlled testing.
+A graphical architecture diagram will be prepared separately for the final presentation.
 
----
+6. System Components
+6.1 CPU Monitoring
 
-# 7. System Architecture
+Reads CPU statistics from /proc/stat and calculates CPU utilization over a measurement interval.
 
-```text
-+------------------------------------------------+
-|                 Linux System                   |
-|                                                |
-| CPU | RAM | Disk | Kernel | Processes | Uptime |
-+-----------------------+------------------------+
-                        |
-                        v
-+------------------------------------------------+
-|             Linux Monitoring Layer             |
-|                                                |
-| /proc/stat                                     |
-| /proc/meminfo                                  |
-| /proc/cpuinfo                                  |
-| /proc/uptime                                   |
-| /proc/sys/kernel/osrelease                     |
-| Process directories                            |
-| statvfs()                                      |
-+-----------------------+------------------------+
-                        |
-                        v
-+------------------------------------------------+
-|               HARD-MON C++ Engine              |
-+-----------------------+------------------------+
-                        |
-          +-------------+-------------+
-          |             |             |
-          v             v             v
-       CPU Monitor   RAM Monitor   Disk Monitor
-          |             |             |
-          +-------------+-------------+
-                        |
-                        v
-+------------------------------------------------+
-|               Diagnostic Engine                |
-|                                                |
-|  NORMAL       WARNING       CRITICAL            |
-+-----------------------+------------------------+
-                        |
-                        v
-+------------------------------------------------+
-|              Overall Health Status             |
-+-----------------------+------------------------+
-                        |
-             +----------+----------+
-             |                     |
-             v                     v
-       Health Logger        Report Generator
-             |                     |
-             v                     v
-     health_log.txt       health_report.txt
-```
+Source: src/cpu_monitor.cpp
 
----
+6.2 RAM Monitoring
 
-# 8. System Components
+Reads /proc/meminfo and uses MemTotal and MemAvailable to calculate RAM utilization.
 
-## 8.1 CPU Monitoring Module
+Source: src/memory_monitor.cpp
 
-**Source:** `src/cpu_monitor.cpp`
+6.3 Disk Monitoring
 
-The CPU monitoring module obtains CPU statistics from:
+Uses the Linux statvfs() interface to calculate filesystem capacity and disk utilization.
 
-```text
-/proc/stat
-```
+Source: src/disk_monitor.cpp
 
-It calculates CPU utilization by comparing CPU statistics over a measurement interval.
+6.4 Diagnostic Engine
 
-### Responsibilities
+Classifies resource utilization using the following thresholds:
 
-* Read CPU statistics.
-* Calculate CPU utilization.
-* Return CPU usage percentage.
+Usage	Status
+Below 70%	NORMAL
+70% to below 90%	WARNING
+90% or above	CRITICAL
 
----
+Overall health follows the highest severity:
 
-## 8.2 Memory Monitoring Module
-
-**Source:** `src/memory_monitor.cpp`
-
-The memory monitoring module reads:
-
-```text
-/proc/meminfo
-```
-
-Important values include total and available memory.
-
-RAM utilization is calculated using the available and total memory information.
-
-### Responsibilities
-
-* Read memory information.
-* Calculate RAM utilization.
-* Return RAM usage percentage.
-
----
-
-## 8.3 Disk Monitoring Module
-
-**Source:** `src/disk_monitor.cpp`
-
-The disk monitoring module uses the Linux `statvfs()` system call to obtain filesystem statistics.
-
-### Responsibilities
-
-* Obtain filesystem capacity.
-* Determine used and available storage.
-* Calculate disk utilization.
-* Return disk usage percentage.
-
----
-
-## 8.4 Diagnostic Engine
-
-**Source:** `src/diagnostic_engine.cpp`
-
-The diagnostic engine evaluates resource utilization against predefined thresholds.
-
-### Diagnostic Thresholds
-
-| Usage         | Status   |
-| ------------- | -------- |
-| `< 70%`       | NORMAL   |
-| `70% – < 90%` | WARNING  |
-| `>= 90%`      | CRITICAL |
-
-The engine evaluates:
-
-* CPU status
-* RAM status
-* Disk status
-
-It then calculates the overall system health.
-
-### Overall Health Logic
-
-The highest severity determines the overall health.
-
-```text
 CRITICAL > WARNING > NORMAL
-```
 
-For example:
+Source: src/diagnostic_engine.cpp
 
-```text
-CPU  : NORMAL
-RAM  : WARNING
-Disk : NORMAL
+6.5 Fault Simulation
 
-Overall : WARNING
-```
+Provides controlled test scenarios:
 
----
+CPU Warning
+CPU Critical
+RAM Warning
+RAM Critical
+Disk Warning
+Disk Critical
+Multiple Faults
 
-# 9. Fault Simulation Module
+Source: src/fault_simulator.cpp
 
-**Source:** `src/fault_simulator.cpp`
+6.6 Logging and Reporting
 
-The fault simulation module allows the diagnostic system to be tested with controlled resource values.
+The logging module records:
 
-Available options include:
+Timestamp
+CPU usage
+RAM usage
+Disk usage
+Overall health status
 
-```text
-1. CPU Warning
-2. CPU Critical
-3. RAM Warning
-4. RAM Critical
-5. Disk Warning
-6. Disk Critical
-7. Multiple Faults
-0. Exit
-```
+The report generator produces a structured report containing system information and health results.
 
-The simulator uses predefined test values instead of intentionally consuming system resources.
+Sources:
 
-For example:
+src/logger.cpp
+src/report_generator.cpp
 
-```text
-CPU Warning  -> 75%
-CPU Critical -> 95%
-```
+Generated files:
 
-This provides a safe and repeatable method for validating diagnostic logic.
-
----
-
-# 10. Health Logging Module
-
-**Source:** `src/logger.cpp`
-
-The logging module records monitoring results in:
-
-```text
 logs/health_log.txt
-```
-
-The log contains information such as:
-
-* Timestamp
-* CPU usage
-* RAM usage
-* Disk usage
-* Overall health status
-
-Example:
-
-```text
-=============================================
-Timestamp : System monitoring event
-CPU       : 0.06%
-RAM       : 8.53%
-Disk      : 5.42%
-Overall   : NORMAL
-=============================================
-```
-
-The logging mechanism allows health information from multiple executions to be retained.
-
----
-
-# 11. System Information Module
-
-**Source:** `src/system_info.cpp`
-
-The system information module collects general Linux system information.
-
-It provides:
-
-* Hostname
-* Kernel version
-* CPU core count
-* System uptime
-* Process count
-
-Example:
-
-```text
-Hostname       : Victus
-Kernel Version : 6.6.87.2-microsoft-standard-WSL2
-CPU Cores      : 16
-System Uptime  : 16230.1 seconds
-Processes      : 46
-```
-
-Values can change depending on the system state and execution time.
-
----
-
-# 12. Health Report Generator
-
-**Source:** `src/report_generator.cpp`
-
-The health report generator combines system information and diagnostic results into a structured report.
-
-Output file:
-
-```text
 logs/health_report.txt
-```
+6.7 System Information
 
-Example structure:
+Collects:
 
-```text
-=============================================
-          HARD-MON HEALTH REPORT
-=============================================
+Hostname
+Kernel version
+CPU core count
+System uptime
+Process count
 
-SYSTEM INFORMATION
----------------------------------------------
-Hostname       : Victus
-Kernel Version : 6.6.87.2-microsoft-standard-WSL2
-CPU Cores      : 16
-System Uptime  : 16230.1 seconds
-Processes      : 46
+Source: src/system_info.cpp
 
-HEALTH STATUS
----------------------------------------------
-CPU Usage      : 0.06% [NORMAL]
-RAM Usage      : 8.53% [NORMAL]
-Disk Usage     : 5.42% [NORMAL]
+7. Linux Interfaces Used
+Interface	Purpose
+/proc/stat	CPU statistics
+/proc/meminfo	Memory information
+/proc/cpuinfo	CPU/core information
+/proc/uptime	System uptime
+/proc/sys/kernel/osrelease	Kernel version
+/proc	Process information
+statvfs()	Filesystem/disk information
 
-Overall Health : NORMAL
-=============================================
-```
+These standard Linux interfaces allow HARD-MON to obtain system information without external monitoring software.
 
----
-
-# 13. Linux System Interfaces
-
-HARD-MON demonstrates the use of Linux system interfaces for system monitoring.
-
-| Interface                    | Purpose               |
-| ---------------------------- | --------------------- |
-| `/proc/stat`                 | CPU statistics        |
-| `/proc/meminfo`              | Memory information    |
-| `/proc/cpuinfo`              | CPU information       |
-| `/proc/uptime`               | System uptime         |
-| `/proc/sys/kernel/osrelease` | Kernel version        |
-| `/proc/` numeric directories | Process counting      |
-| `statvfs()`                  | Filesystem statistics |
-
-These interfaces allow the application to collect system information without requiring external monitoring software.
-
----
-
-# 14. Data Flow
-
-The system follows this data flow:
-
-```text
-Linux Operating System
-          |
-          v
-   Data Collection
-          |
-    +-----+-----+
-    |     |     |
-    v     v     v
-   CPU   RAM   Disk
-    |     |     |
-    +-----+-----+
-          |
-          v
-  Diagnostic Engine
-          |
-          v
- Individual Status
-          |
-          v
- Overall Health
-       /     \
-      /       \
-     v         v
-  Logger     Reporter
-     |         |
-     v         v
- Health Log  Health Report
-```
-
----
-
-# 15. Program Execution Flow
-
-```text
-START
-  |
-  v
-Initialize HARD-MON
-  |
-  v
-Collect System Information
-  |
-  v
-Collect CPU/RAM/Disk Usage
-  |
-  v
-Evaluate Resource Usage
-  |
-  v
-Determine Individual Status
-  |
-  v
-Calculate Overall Health
-  |
-  +-----------> Write Health Log
-  |
-  +-----------> Generate Health Report
-  |
-  v
-Ask for Fault Simulation
-  |
-  +---- YES ----> Run Simulation
-  |
-  +---- NO -----> EXIT
-  |
-  v
-END
-```
-
----
-
-# 16. Project Structure
-
-```text
+8. Project Structure
 WiproProject/
 │
-├── src/
-│   ├── main.cpp
-│   ├── cpu_monitor.cpp
-│   ├── memory_monitor.cpp
-│   ├── disk_monitor.cpp
-│   ├── diagnostic_engine.cpp
-│   ├── fault_simulator.cpp
-│   ├── logger.cpp
-│   ├── system_info.cpp
-│   └── report_generator.cpp
+├── .gitignore
+├── README.md
+│
+├── docs/
+│   ├── PROJECT_PLAN.md
+│   ├── PROJECT_REPORT.md
+│   ├── SYSTEM_DESIGN.md
+│   └── TESTING.md
 │
 ├── include/
-│   ├── monitor.h
 │   ├── diagnostic.h
 │   ├── fault_simulator.h
 │   ├── logger.h
-│   ├── system_info.h
-│   └── report_generator.h
-│
-├── tests/
+│   ├── monitor.h
+│   ├── report_generator.h
+│   └── system_info.h
 │
 ├── logs/
 │   ├── health_log.txt
 │   └── health_report.txt
 │
-├── docs/
-│   ├── PROJECT_PLAN.md
-│   ├── SYSTEM_DESIGN.md
-│   ├── TESTING.md
-│   └── PROJECT_REPORT.md
-│
-├── .gitignore
-└── README.md
-```
+└── src/
+    ├── cpu_monitor.cpp
+    ├── diagnostic_engine.cpp
+    ├── disk_monitor.cpp
+    ├── fault_simulator.cpp
+    ├── logger.cpp
+    ├── main.cpp
+    ├── memory_monitor.cpp
+    ├── report_generator.cpp
+    └── system_info.cpp
+9. Development Environment
+Component	Environment
+Operating System	Ubuntu 24.04.4 LTS
+Linux Environment	WSL2
+Kernel	6.6.87.2-microsoft-standard-WSL2
+Language	C++17
+Compiler	G++ 13.3
+IDE	Visual Studio Code
+Version Control	Git
+10. Build and Execution
 
----
+From the project root:
 
-# 17. Development Environment
-
-| Component       | Configuration               |
-| --------------- | --------------------------- |
-| OS              | Ubuntu 24.04.4 LTS          |
-| Environment     | WSL2                        |
-| Kernel          | Microsoft WSL2 Linux Kernel |
-| Language        | C++17                       |
-| Compiler        | G++ 13.3.0                  |
-| IDE             | Visual Studio Code          |
-| Version Control | Git                         |
-| Shell           | Bash                        |
-
----
-
-# 18. Build and Execution
-
-## Compilation
-
-The complete application is compiled using:
-
-```bash
 g++ -std=c++17 src/main.cpp src/cpu_monitor.cpp src/memory_monitor.cpp src/disk_monitor.cpp src/diagnostic_engine.cpp src/fault_simulator.cpp src/logger.cpp src/system_info.cpp src/report_generator.cpp -o hardmon
-```
 
-This generates:
+Run:
 
-```text
-hardmon
-```
-
-## Execution
-
-Run the application using:
-
-```bash
 ./hardmon
-```
 
----
+Generated executables and object files are excluded from Git using .gitignore.
 
-# 19. Example Application Output
+11. Application Execution
 
-A typical execution produces output similar to:
+The program follows this sequence:
 
-```text
+Start HARD-MON
+      ↓
+Collect System Information
+      ↓
+Collect CPU / RAM / Disk Data
+      ↓
+Evaluate Resource Thresholds
+      ↓
+Calculate Overall Health
+      ↓
+Display Health Report
+      ↓
+Write Health Log
+      ↓
+Generate Health Report
+      ↓
+Optional Fault Simulation
+      ↓
+Exit
+12. Example Output
+
+A final clean execution produced:
+
 ====================================
           HARD-MON SYSTEM
  Hardware Health & Diagnostic System
@@ -639,386 +316,240 @@ Collecting hardware information...
 Hostname       : Victus
 Kernel Version : 6.6.87.2-microsoft-standard-WSL2
 CPU Cores      : 16
-System Uptime  : 16230.1 seconds
+System Uptime  : 19430 seconds
 Processes      : 46
 
 ------------- HEALTH REPORT -------------
 
 CPU Usage  : 0.06 % [NORMAL]
-RAM Usage  : 8.53 % [NORMAL]
+RAM Usage  : 8.56 % [NORMAL]
 Disk Usage : 5.42 % [NORMAL]
 
 ------------------------------------------
 Overall Health : NORMAL
 ------------------------------------------
 
-Run fault simulation? (y/n):
-```
-
-Actual values vary depending on the system at runtime.
-
----
-
-# 20. Fault Simulation Results
-
-The fault simulation module was tested using different conditions.
-
-### CPU Warning
-
-```text
-CPU Usage : 75%
-Status    : WARNING
-```
-
-### CPU Critical
-
-```text
-CPU Usage : 95%
-Status    : CRITICAL
-```
-
-### RAM Warning
-
-```text
-RAM Usage : 75%
-Status    : WARNING
-```
-
-### RAM Critical
-
-```text
-RAM Usage : 95%
-Status    : CRITICAL
-```
-
-### Multiple Faults
-
-Example:
-
-```text
-CPU  : 95% -> CRITICAL
-RAM  : 75% -> WARNING
-Disk : 95% -> CRITICAL
-
-Overall : CRITICAL
-```
-
-These simulations verify that the diagnostic engine correctly identifies different severity levels.
-
----
-
-# 21. Testing Strategy
-
-Testing was performed at multiple levels.
-
-## 21.1 Unit-Level Testing
-
-Individual monitoring and processing modules were tested separately.
-
-Modules tested include:
-
-* CPU monitor
-* RAM monitor
-* Disk monitor
-* Diagnostic engine
-* Fault simulator
-* System information
-* Logger
-* Report generator
-
-## 21.2 Integration Testing
-
-All modules were integrated through `main.cpp` and executed as a complete application.
-
-## 21.3 Fault Simulation Testing
-
-Controlled WARNING and CRITICAL values were used to verify diagnostic behavior.
-
-## 21.4 Reliability Testing
-
-The complete application was executed repeatedly to verify stable execution.
-
-A five-run reliability test was performed using:
-
-```bash
-for i in {1..5}; do echo "===== TEST RUN $i ====="; ./hardmon <<< n; done
-```
-
-The application completed the repeated execution test successfully.
-
----
-
-# 22. Testing Results
-
-| Test Area                 | Result |
-| ------------------------- | ------ |
-| Project Compilation       | PASS   |
-| Program Execution         | PASS   |
-| CPU Monitoring            | PASS   |
-| RAM Monitoring            | PASS   |
-| Disk Monitoring           | PASS   |
-| System Information        | PASS   |
-| NORMAL Diagnosis          | PASS   |
-| WARNING Diagnosis         | PASS   |
-| CRITICAL Diagnosis        | PASS   |
-| CPU Fault Simulation      | PASS   |
-| RAM Fault Simulation      | PASS   |
-| Disk Fault Simulation     | PASS   |
-| Multiple Fault Simulation | PASS   |
-| Health Logging            | PASS   |
-| Health Report             | PASS   |
-| Module Integration        | PASS   |
-| Repeated Execution        | PASS   |
-
-Detailed test information is maintained in:
-
-```text
-docs/TESTING.md
-```
-
----
-
-# 23. Results
-
-The completed HARD-MON system successfully demonstrates Linux-based resource monitoring and diagnostic processing.
-
-The application can:
-
-* Obtain real CPU utilization.
-* Obtain real RAM utilization.
-* Obtain real disk utilization.
-* Collect Linux system information.
-* Classify resource utilization.
-* Calculate overall system health.
-* Simulate abnormal conditions.
-* Record monitoring results.
-* Generate health reports.
-* Execute repeatedly without unexpected termination.
-
-The implementation demonstrates how Linux system information can be accessed and processed using C++.
-
----
-
-# 24. Advantages
-
-The current implementation provides several practical advantages:
-
-* Lightweight command-line application
-* Modular architecture
-* Linux-native monitoring
-* No external database requirement
-* No cloud dependency
-* Controlled fault simulation
-* Simple diagnostic logic
-* Human-readable reports
-* Persistent health logging
-* Easy source-code maintenance
-* Git-based development history
-
----
-
-# 25. Limitations
-
-The current version has some limitations.
-
-### 25.1 Limited Hardware Parameters
-
-The application currently focuses primarily on CPU, RAM and disk utilization.
-
-### 25.2 No Physical Sensor Integration
-
-Physical temperature, fan-speed and other hardware sensor data are not currently integrated.
-
-### 25.3 Static Thresholds
-
-Diagnostic thresholds are predefined in the application and are not configurable through an external configuration file.
-
-### 25.4 Command-Line Interface
-
-The current application uses a command-line interface rather than a graphical dashboard.
-
-### 25.5 Fault Simulation
-
-Fault conditions are simulated using predefined values rather than being generated by actual hardware failures.
-
-### 25.6 No Historical Database
-
-Health information is stored in text logs rather than a structured database.
-
----
-
-# 26. Future Enhancements
-
-Future versions of HARD-MON could include:
-
-## Hardware Monitoring
-
-* CPU temperature
-* GPU temperature
-* Fan speed
-* Battery health
-* Sensor monitoring
-
-## System Monitoring
-
-* Network bandwidth
-* Network connectivity
-* Process-level CPU and memory usage
-* Service monitoring
-
-## Visualization
-
-* Real-time dashboard
-* Resource utilization graphs
-* Historical trend visualization
-
-## Alerting
-
-* Desktop notifications
-* Email notifications
-* Configurable warning thresholds
-* Configurable critical thresholds
-
-## Advanced Diagnostics
-
-* Historical trend analysis
-* Anomaly detection
-* Predictive maintenance
-* Machine learning-based diagnosis
-
-## Linux System Integration
-
-* Kernel-level monitoring
-* Device-driver integration
-* Hardware sensor interfaces
-* Remote Linux monitoring
-
----
-
-# 27. Version Control
-
-Git was used throughout development to maintain the project source and documentation history.
-
-The project uses:
-
-```text
-master
-```
-
-as the primary branch.
-
-Major components were committed incrementally during development.
-
-The repository contains the source code, header files, documentation and configuration files required for the project.
-
-Generated binaries, object files and runtime log files are excluded using `.gitignore`.
-
----
-
-# 28. Development Roadmap
-
-The project followed a five-day development roadmap.
-
-| Day   | Focus                   | Deliverable                                |
-| ----- | ----------------------- | ------------------------------------------ |
-| Day 1 | Setup & Requirements    | Project foundation                         |
-| Day 2 | Monitoring              | CPU/RAM/Disk monitoring                    |
-| Day 3 | Diagnosis               | Diagnostic engine + fault simulation       |
-| Day 4 | Integration             | Logging + reporting + complete application |
-| Day 5 | Testing & Documentation | Final tested project                       |
-
-Detailed planning information is available in:
-
-```text
+Health report generated successfully.
+
+Run fault simulation? (y/n): n
+
+Dynamic values such as CPU usage, uptime, and process count may vary between executions.
+
+13. Testing
+
+Testing was performed at functional, diagnostic, integration, and reliability levels.
+
+Functional Tests
+CPU monitoring
+RAM monitoring
+Disk monitoring
+System information
+Logging
+Health report generation
+Diagnostic Tests
+NORMAL condition
+WARNING condition
+CRITICAL condition
+Fault Simulation Tests
+CPU WARNING
+CPU CRITICAL
+RAM WARNING
+RAM CRITICAL
+Disk WARNING
+Disk CRITICAL
+Multiple faults
+Integration Testing
+
+All modules were integrated into the main application and executed together.
+
+Reliability Testing
+
+The complete application was executed five consecutive times to verify stable operation.
+
+14. Test Results
+Test Area	Result
+Compilation	PASS
+Program Execution	PASS
+CPU Monitoring	PASS
+RAM Monitoring	PASS
+Disk Monitoring	PASS
+System Information	PASS
+NORMAL Status	PASS
+WARNING Status	PASS
+CRITICAL Status	PASS
+CPU Fault Simulation	PASS
+RAM Fault Simulation	PASS
+Disk Fault Simulation	PASS
+Multiple Fault Simulation	PASS
+Health Logging	PASS
+Health Report	PASS
+Integration Testing	PASS
+Reliability Testing	PASS
+
+The final clean build and execution also completed successfully using the complete source-code set.
+
+15. Results
+
+The completed HARD-MON application successfully:
+
+Collects Linux system information.
+Monitors CPU, RAM, and disk utilization.
+Classifies individual resource health.
+Calculates overall system health.
+Simulates abnormal resource conditions.
+Records health information.
+Generates health reports.
+Executes reliably across repeated test runs.
+16. Advantages and Limitations
+Advantages
+Lightweight implementation.
+Modular C++ architecture.
+Uses standard Linux interfaces.
+No external hardware required.
+No database or third-party monitoring software required.
+Simple command-line execution.
+Clear health classification.
+Controlled fault testing.
+Persistent logging and reporting.
+Limitations
+Monitors only selected resources.
+Uses threshold-based diagnosis.
+Fault simulation does not create actual hardware failures.
+No graphical interface.
+No historical data analysis.
+No remote monitoring.
+No hardware temperature/sensor monitoring.
+Does not implement an actual Linux kernel driver.
+17. Future Enhancements
+
+Potential future improvements include:
+
+Real-time monitoring mode
+CPU/GPU temperature monitoring
+Hardware sensor integration
+Network monitoring
+Historical data storage
+Database integration
+Remote monitoring
+Desktop or email alerts
+Graphical user interface
+Web-based monitoring dashboard
+Advanced diagnostic algorithms
+Linux kernel driver integration
+18. Version Control and Documentation
+
+Git was used for source-code version control throughout development.
+
+Major milestones were committed separately, including:
+
+Project initialization
+CPU monitoring
+RAM monitoring
+Disk monitoring
+Diagnostic engine
+Fault simulation
+Logging
+System information
+Report generation
+Documentation
+
+Generated executables, object files, and logs are excluded using .gitignore.
+
+Project documentation consists of:
+
+README.md
 docs/PROJECT_PLAN.md
-```
+docs/SYSTEM_DESIGN.md
+docs/TESTING.md
+docs/PROJECT_REPORT.md
+19. Six-Day Development Roadmap
+Day 1 — Project Introduction, Requirements & Setup
+Finalize project idea and objectives.
+Define problem statement and scope.
+Identify functional and non-functional requirements.
+Set up Ubuntu/WSL2, C++, VS Code, and Git.
+Create project structure.
 
----
+Deliverable: Requirements and development environment.
 
-# 29. Documentation
+Day 2 — Hardware Monitoring
+Implement CPU monitoring.
+Implement RAM monitoring.
+Implement disk monitoring.
+Implement system information collection.
+Test individual modules.
 
-The project documentation is divided into multiple files.
+Deliverable: Hardware monitoring modules.
 
-| Document            | Purpose                              |
-| ------------------- | ------------------------------------ |
-| `README.md`         | Project introduction and usage       |
-| `PROJECT_PLAN.md`   | Requirements and development roadmap |
-| `SYSTEM_DESIGN.md`  | Architecture and system design       |
-| `TESTING.md`        | Testing strategy and results         |
-| `PROJECT_REPORT.md` | Complete technical project report    |
+Day 3 — Diagnostics & Fault Simulation
+Implement health thresholds.
+Implement NORMAL, WARNING, and CRITICAL states.
+Implement overall health calculation.
+Implement CPU, RAM, disk, and multiple-fault simulations.
 
----
+Deliverable: Diagnostic engine and fault simulator.
 
-# 30. Key Learning Outcomes
+Day 4 — Integration, Logging & Reporting
+Integrate all modules.
+Implement health logging.
+Implement health report generation.
+Perform end-to-end testing.
 
-The development of HARD-MON provided practical experience in:
+Deliverable: Complete working prototype.
 
-### Linux
+Day 5 — Testing & Improvement
+Perform functional testing.
+Perform fault simulation testing.
+Perform integration testing.
+Perform reliability testing.
+Verify logs and reports.
+Resolve identified issues.
 
-* Linux `/proc` filesystem
-* Linux system information
-* Process inspection
-* Filesystem statistics
-* WSL2 environment
+Deliverable: Stable tested system.
 
-### C++
+Day 6 — Finalization & Presentation Preparation
+Finalize documentation.
+Perform final source-code audit.
+Perform clean compilation and execution.
+Prepare architecture diagram.
+Prepare final demonstration and presentation.
+Prepare GitHub repository.
 
-* Modular C++ programming
-* Header/source separation
-* File handling
-* String processing
-* System-level programming
-* Function-based module design
-* C++ compilation and linking
+Deliverable: Final project and presentation-ready documentation.
 
-### System Programming
+20. Learning Outcomes
 
-* Reading Linux virtual files
-* CPU utilization calculation
-* Memory utilization calculation
-* Filesystem statistics
-* Process counting
-* Kernel information retrieval
+The project provided practical experience in:
 
-### Software Engineering
+C++
+Modular programming
+Header/source organization
+File handling
+System-level programming
+C++17 compilation
+Linux
+/proc filesystem
+Process information
+CPU and memory statistics
+Filesystem statistics
+Linux command-line development
+Software Engineering
+Requirements analysis
+Modular architecture
+Incremental implementation
+Testing and debugging
+Technical documentation
+Version Control
+Git initialization
+Commit-based development
+.gitignore
+Repository organization
+21. Conclusion
 
-* Modular architecture
-* Incremental development
-* Testing
-* Documentation
-* Version control
-* Git commits
-* Project planning
+HARD-MON successfully demonstrates a modular Linux-based approach to hardware and system health monitoring using C++.
 
----
+The application collects real Linux system data, evaluates resource utilization using predefined diagnostic rules, simulates abnormal conditions for testing, records health information, and generates structured reports.
 
-# 31. Project Achievements
+The completed project demonstrates practical knowledge of Linux system programming, C++, resource monitoring, diagnostic logic, fault simulation, software testing, documentation, and Git version control.
 
-The completed HARD-MON project demonstrates:
-
-* Successful Linux system monitoring
-* Successful C++ implementation
-* Modular system architecture
-* Controlled fault simulation
-* Diagnostic status classification
-* Health logging
-* Automated report generation
-* Functional testing
-* Integration testing
-* Reliability testing
-* Git-based version control
-* Complete technical documentation
-
----
-
-# 32. Conclusion
-
-HARD-MON successfully implements a Linux-based hardware health and diagnostic system using C++17.
-
-The application collects real system information through Linux interfaces, monitors CPU, RAM and disk utilization, evaluates resource conditions using predefined thresholds and produces an overall system health status.
-
-The addition of controlled fault simulation provides a safe mechanism for validating diagnostic behavior. Health logging and report generation further extend the usefulness of the system by providing persistent monitoring information.
-
-The modular design makes the application easier to test, maintain and extend. The project also demonstrates practical concepts from Linux, system programming, C++, software testing and Git-based development.
-
-Future versions can extend th
+The architecture can be extended in the future with real-time monitoring, hardware sensors, graphical interfaces, remote monitoring, and more advanced diagnostic capabilities.
